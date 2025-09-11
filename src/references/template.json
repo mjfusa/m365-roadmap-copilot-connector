@@ -1,0 +1,60 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.3",
+  "body": [
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "auto",
+          "items": [
+            {
+              "type": "Image",
+              "url": "https://searchuxcdn.blob.core.windows.net/designerapp/images/DefaultMRTIcon.png",
+              "size": "Small",
+              "horizontalAlignment": "Center",
+              "altText": "Microsoft 365 Roadmap"
+            }
+          ],
+          "height": "stretch"
+        },
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "[${title}](${moreInfoLink})",
+              "color": "Accent",
+              "size": "Medium",
+              "weight": "Bolder"
+            },
+            {
+              "type": "TextBlock",
+              "text": "**Status:** ${status} | **Release Phase:** ${releasePhase}",
+              "spacing": "Small",
+              "$when": "${status!='' || releasePhase!=''}"
+            },
+            {
+              "type": "TextBlock",
+              "text": "${description}",
+              "wrap": true,
+              "maxLines": 3,
+              "spacing": "Medium"
+            },
+            {
+              "type": "TextBlock",
+              "text": "**Products:** ${products} | **Platforms:** ${platforms}",
+              "spacing": "Small",
+              "$when": "${products!='' || platforms!=''}"
+            }
+          ],
+          "horizontalAlignment": "Center",
+          "spacing": "Medium"
+        }
+      ]
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
+}

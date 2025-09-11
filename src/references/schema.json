@@ -1,0 +1,72 @@
+[
+  {
+    "name": "title",
+    "type": "String",
+    "isQueryable": "true",
+    "isSearchable": "true",
+    "isRetrievable": "true",
+    "labels": ["title"]
+  },
+  {
+    "name": "description",
+    "type": "String",
+    "isQueryable": "true",
+    "isSearchable": "true",
+    "isRetrievable": "true"
+  },
+  {
+    "name": "status",
+    "type": "String",
+    "isQueryable": "true",
+    "isSearchable": "true",
+    "isRetrievable": "true"
+  },
+  {
+    "name": "releasePhase",
+    "type": "StringCollection",
+    "isQueryable": "true",
+    "isSearchable": "true",
+    "isRetrievable": "true"
+  },
+  {
+    "name": "products",
+    "type": "StringCollection",
+    "isQueryable": "true",
+    "isSearchable": "true",
+    "isRetrievable": "true"
+  },
+  {
+    "name": "platforms",
+    "type": "StringCollection",
+    "isQueryable": "true",
+    "isSearchable": "true",
+    "isRetrievable": "true"
+  },
+  {
+    "name": "cloudInstances",
+    "type": "StringCollection",
+    "isQueryable": "true",
+    "isSearchable": "true",
+    "isRetrievable": "true"
+  },
+  {
+    "name": "created",
+    "type": "dateTime",
+    "isRetrievable": "true",
+    "labels": ["createdDateTime"]
+  },
+  {
+    "name": "lastModified",
+    "type": "dateTime",
+    "isRetrievable": "true",
+    "labels": ["lastModifiedDateTime"]
+  },
+  {
+    "name": "moreInfoLink",
+    "type": "String",
+    "isRetrievable": "true",
+    "isQueryable": "true",
+    "isSearchable": "true",
+    "labels": ["url"]
+  }
+]

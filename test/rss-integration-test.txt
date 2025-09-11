@@ -1,0 +1,128 @@
+/**
+ * Test script to validate RSS feed integration
+ * Run with: npm run test:rss
+ */
+
+import { initConfig } from "../src/config";
+import { fetchRssItems } from "../src/services/rssService";
+import { getAllItemsFromAPI } from "../src/custom/getAllItemsFromAPI";
+import { getExternalItemFromItem } from "../src/custom/getExternalItemFromItem";
+
+// Mock InvocationContext for testing
+const mockContext = {
+  log: console.log,
+  error: console.error,
+  warn: console.warn,
+  info: console.info,
+  debug: console.debug,
+  trace: console.trace,
+  invocationId: 'test-invocation',
+  functionName: 'test-function',
+  extraInputs: new Map(),
+  extraOutputs: new Map(),
+  retryContext: {
+    retryCount: 0,
+    maxRetryCount: 0
+  },
+  traceContext: {
+    traceparent: '',
+    tracestate: ''
+  },
+  options: {
+    trigger: {
+      name: 'test'
+    }
+  }
+} as any;
+
+async function testRssIntegration() {
+  console.log("🧪 Testing RSS Integration...\n");
+
+  try {
+    // Test 1: Configuration initialization
+    console.log("1️⃣ Testing configuration initialization...");
+    
+    // Set required environment variables for testing
+    process.env.AZURE_CLIENT_ID = "test-client-id";
+    process.env.CONNECTOR_ID = "M365RoadmapRSS";
+    process.env.CONNECTOR_NAME = "M365 Roadmap RSS";
+    process.env.CONNECTOR_DESCRIPTION = "Connection that indexes Microsoft 365 roadmap items from RSS feed.";
+    process.env.RSS_FEED_URL = "https://www.microsoft.com/releasecommunications/api/v2/m365/rss";
+    
+    const config = initConfig(mockContext);
+    console.log("✅ Configuration initialized successfully");
+    console.log(`   RSS URL: ${process.env.RSS_FEED_URL || 'https://www.microsoft.com/releasecommunications/api/v2/m365/rss'}`);
+    console.log(`   Connector ID: ${config.connector.id}\n`);
+
+    // Test 2: RSS feed fetching
+    console.log("2️⃣ Testing RSS feed fetching...");
+    const rssItems = await fetchRssItems(config);
+    console.log(`✅ Successfully fetched ${rssItems.length} RSS items`);
+    
+    if (rssItems.length > 0) {
+      const sampleItem = rssItems[0];
+      console.log("   Sample RSS item:");
+      console.log(`   - Title: ${sampleItem.title}`);
+      console.log(`   - Products: ${sampleItem.tags.products.join(", ")}`);
+      console.log(`   - Status: ${sampleItem.status}`);
+      console.log(`   - Release Phase: ${sampleItem.tags.releasePhase.join(", ")}\n`);
+    }
+
+    // Test 3: Item transformation pipeline
+    console.log("3️⃣ Testing item transformation pipeline...");
+    let itemCount = 0;
+    for await (const item of getAllItemsFromAPI(config)) {
+      itemCount++;
+      if (itemCount === 1) {
+        console.log("   Sample transformed item:");
+        console.log(`   - ID: ${item.id}`);
+        console.log(`   - Title: ${item.title}`);
+        console.log(`   - Products: ${item.products.join(", ")}`);
+        console.log(`   - URL: ${item.url}\n`);
+        
+        // Test 4: External item transformation
+        console.log("4️⃣ Testing Graph API transformation...");
+        const externalItem = getExternalItemFromItem(item);
+        console.log("✅ Successfully created external item for Graph API");
+        console.log(`   - Properties keys: ${Object.keys(externalItem.properties || {}).join(", ")}`);
+        console.log(`   - Content type: ${externalItem.content?.type}`);
+        console.log(`   - ACL configured: ${externalItem.acl ? "Yes" : "No"}\n`);
+      }
+      if (itemCount >= 3) break; // Test with first 3 items
+    }
+    
+    console.log(`✅ Processed ${itemCount} items through the transformation pipeline\n`);
+
+    // Test 5: Schema validation
+    console.log("5️⃣ Testing schema compatibility...");
+    const schema = config.connector.schema;
+    const requiredFields = ['title', 'description', 'status', 'products', 'platforms', 'releasePhase'];
+    const schemaFields = schema.properties?.map((p: any) => p.name) || [];
+    
+    const missingFields = requiredFields.filter(field => !schemaFields.includes(field));
+    if (missingFields.length === 0) {
+      console.log("✅ All required fields are present in schema");
+    } else {
+      console.log(`⚠️ Missing fields in schema: ${missingFields.join(", ")}`);
+    }
+    console.log(`   Schema fields: ${schemaFields.join(", ")}\n`);
+
+    console.log("🎉 RSS Integration Test Completed Successfully!");
+    console.log("\n📋 Summary:");
+    console.log(`   - RSS items fetched: ${rssItems.length}`);
+    console.log(`   - Items transformed: ${itemCount}`);
+    console.log(`   - Schema fields: ${schemaFields.length}`);
+    console.log(`   - Configuration: ✅`);
+    console.log(`   - RSS parsing: ✅`);
+    console.log(`   - Data transformation: ✅`);
+    console.log(`   - Graph API format: ✅`);
+
+  } catch (error) {
+    console.error("❌ RSS Integration Test Failed:");
+    console.error(error);
+    process.exit(1);
+  }
+}
+
+// Run the test
+testRssIntegration();

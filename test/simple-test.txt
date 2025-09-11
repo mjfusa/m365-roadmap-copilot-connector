@@ -1,0 +1,20 @@
+// Simple test to check basic functionality
+console.log("🧪 Starting RSS Integration Test...");
+
+try {
+  // Test basic imports
+  const { initConfig } = require("../dist/src/config");
+  console.log("✅ Config import successful");
+  
+  const { fetchRssItems } = require("../dist/src/services/rssService");
+  console.log("✅ RSS service import successful");
+  
+  const { getAllItemsFromAPI } = require("../dist/src/custom/getAllItemsFromAPI");
+  console.log("✅ getAllItemsFromAPI import successful");
+  
+  console.log("🎉 All imports successful!");
+  
+} catch (error) {
+  console.error("❌ Import error:", error.message);
+  console.error("Stack:", error.stack);
+}

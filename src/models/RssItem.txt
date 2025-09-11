@@ -1,0 +1,26 @@
+/**
+ * Represents an RSS item from the Microsoft 365 roadmap feed.
+ * This matches the structure returned by the RSS proxy service.
+ */
+export interface RssItem {
+  id: number;
+  title: string;
+  description: string;
+  moreInfoLink: string;
+  publicDisclosureAvailabilityDate?: string;
+  publicPreviewDate?: string;
+  created: string;
+  publicRoadmapStatus?: string;
+  status?: string;
+  modified: string;
+  locale?: string;
+  tags: {
+    products: string[];
+    cloudInstances: string[];
+    releasePhase: string[];
+    platforms: string[];
+  };
+  link: string;
+  pubDate: string;
+  guid: string;
+}
