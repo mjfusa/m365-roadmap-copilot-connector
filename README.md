@@ -130,4 +130,24 @@ Once the deployment is finished, you can go to the Azure portal and navigate to 
 - `fullCrawl`: This function is run once per day and it ensures that all the content is crawled. Run it manually if you want to test in advance.
 - `incrementalCrawl`: This function is run every minute and it ensures that the content is updated. You can run it manually as well.
 
+### lastCrawl checkpoint file
+
+The connector keeps track of the last successful crawl time in a small checkpoint file so that incremental crawls only request recent changes. Locally this file is stored at `tmp/lastCrawl.json`.
+
+If you want to force a full crawl (for example to re-index all items), delete the checkpoint file before running a crawl. Example commands:
+
+PowerShell:
+
+```powershell
+Remove-Item .\tmp\lastCrawl.json -ErrorAction SilentlyContinue
+```
+
+Bash / macOS / Linux:
+
+```bash
+rm -f tmp/lastCrawl.json
+```
+
+When the file is absent the connector will treat the next run as a full crawl and re-ingest all content.
+
 *Note*: For Azure based deployments, it is needed to give admin consent to the permissions of the connector app for this deployment. You can find the Application (Client) ID of this application looking into `AZURE_CLIENT_ID` environment variable defined for the Azure Function application.
