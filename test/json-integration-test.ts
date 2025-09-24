@@ -43,7 +43,7 @@ async function testJsonIntegration() {
     console.log("1️⃣ Testing configuration initialization...");
     
     // Set required environment variables for testing
-    process.env.AZURE_CLIENT_ID = "test-client-id";
+    process.env.AZURE_CLIENT_ID = "15bd357d-f14a-443c-be64-c85813d00bfe";
     process.env.CONNECTOR_ID = "M365Roadmap";
     process.env.CONNECTOR_NAME = "M365 Roadmap";
     process.env.CONNECTOR_DESCRIPTION = "Connection that indexes Microsoft 365 roadmap items from JSON API.";

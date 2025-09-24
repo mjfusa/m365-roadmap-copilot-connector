@@ -1,67 +1,12 @@
-# Microsoft 365 Roadmap JSON Connector
+# Microsoft 365 Roadmap Connector
 
 ## Summary
 
-This project has been refactored to use the Microsoft 365 Roadmap JSON API instead of the RSS feed. The connector now fetches roadmap items from `https://www.microsoft.com/releasecommunications/api/v1/m365` and processes JSON data instead of XML.
+This custom Copilot Connector for Microsoft 365 Roadmap will help you bring Microsoft 365 Roadmap data into Microsoft 365 Copilot. Once ingested, you can ask Copilot about the latest roadmap items. You can use the connection 'M365Roadmap' in your Copilot agents as a knowledge source.
 
-This sample project uses Microsoft 365 Agents Toolkit for Visual Studio Code to simplify the process of creating a [Microsoft Copilot connector](https://learn.microsoft.com/graph/connecting-external-content-connectors-overview) that ingests data from the Microsoft 365 Roadmap JSON API to Microsoft Graph. It provides an end to end opinionated starting point of creating the connector, ingesting content and refreshing the ingested content.
+The connector fetches roadmap items from `https://www.microsoft.com/releasecommunications/api/v1/m365` and processes the JSON data output. It does a full crawl once a day and incrementally crawls every 15 minutes to keep the data up to date.
 
-![External content in Microsoft 365 Copilot](./assets/copilot-results.png)
-
-## Changes Made
-
-### 1. Data Source Migration
-- **Old**: RSS feed from `https://www.microsoft.com/releasecommunications/api/v2/m365/rss`
-- **New**: JSON API from `https://www.microsoft.com/releasecommunications/api/v1/m365`
-
-### 2. Updated Components
-- **Environment Variables**: Changed `RSS_FEED_URL` to `JSON_API_URL`
-- **Configuration**: Updated Config model to use `jsonApiUrl`
-- **Data Service**: Replaced `rssService.ts` with `roadmapService.ts`
-- **Data Models**: Added `RoadmapItem` interface for JSON structure
-- **Tests**: Added new JSON integration test
-
-### 3. Data Structure Changes
-The JSON API provides a cleaner, more structured data format:
-- Direct array of roadmap items
-- Structured tags in `tagsContainer` object
-- No XML parsing required
-- Better type safety
-
-## Migration Benefits
-1. **Performance**: No XML parsing overhead
-2. **Reliability**: More structured data format
-3. **Maintainability**: Cleaner code without XML complexity
-4. **Type Safety**: Better TypeScript support with JSON structures
-
-## Features
-
-This template shows how to ingest data from the Microsoft 365 Roadmap JSON API into your Microsoft 365 tenant.
-It uses the Microsoft 365 Roadmap JSON API to provide roadmap items and is intended to be a starting point to help you bring Microsoft 365 roadmap data into M365 Copilot.
-
-The template illustrates the following concepts:
-
-- Simplify debugging and provisioning of resources with Microsoft 365 Agents Toolkit for Visual Studio code
-- Create external connection schema
-- Support full ingestion of data
-- Support incremental ingestion of data
-- Visualize the external content in Microsoft 365 Copilot. 
-- Bonus: You can also add a new custom Copilot connector when you create a Declarative Agent (DA) in M365 Agents Toolkit.
-![Creating a custom Copilot connector with a Declarative Agent (DA)](./assets/add-cc-with-da.png)
-
-## Contributors
-
-- [Sébastien Levert](https://github.com/sebastienlevert)
-- [Luis Javier Fernández](https://github.com/luisjfdez)
-- [Rachit Malik](https://github.com/RachitMalik12)
-
-## Version History
-
-Version|Date|Comments
--------|----|--------
-1.0|December 03, 2024|Initial release
-1.1|April 15, 2025|Additional comments and minor improvements
-1.2|April 21, 2025|Rebrand and remove unecessary steps 
+This connector was built using the [Microsoft 365 Agents Toolkit for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=TeamsDevApp.ms-teams-vscode-extension). It provides an end-to-end opinionated starting point for creating a connector, ingesting content, and refreshing the ingested content.
 
 ## Prerequisites
 
@@ -79,8 +24,8 @@ Version|Date|Comments
 - Press <kbd>F5</kbd>, follow the sign in prompts
 - When prompted, click on the link in the console to perform the tenant-wide admin consent
 - Wait for all tasks to complete
-- In the web browser navigate to the [Search & Intelligence](https://admin.microsoft.com/#/MicrosoftSearch/Connectors) area in the Microsoft 365 Admin Center
-- A table will display available connections. Locate the **M365 Roadmap RSS** connection. In the **Required actions** column, select the link to **Include Connector Results** and confirm the prompt
+- In the web browser navigate to the [Copilot Connectors](https://admin.microsoft.com/#/copilot/connectors) area in the Microsoft 365 Admin Center
+- A table will display available connections. Locate the **Microsoft 365 Roadmap** connection. In the **Required actions** column, select the link to **Include Connector Results** and confirm the prompt
 - Navigate to [Microsoft 365 Copilot](https://m365.cloud.microsoft/chat)
 - Using the search box on top, search for: `What are the latest Microsoft 365 roadmap items?`. You should see the following result:
 
@@ -98,24 +43,6 @@ Set the environment variable:
 JSON_API_URL=https://www.microsoft.com/releasecommunications/api/v1/m365
 ```
 
-### Testing
-Run the JSON integration test:
-```bash
-npm run test:json
-```
-
-### Deployment
-The connector will automatically use the JSON API when deployed with the updated configuration.
-
-## Further customization
-
-This template is an opinionated starting point for your own connector. You can further customize it by making changes to the code and configuration files. As a general guide, you can update the content of the following folders:
-- `src/custom`: This folder contains custom code to gather and transform data to be ingested into Microsoft Graph. The example uses the Microsoft 365 Roadmap JSON API, but you can replace it with any other API.
-- `src/references`: This folder includes the schema definition of the connector. Adjust it to match the data and metadata you want to ingest. 
-- `src/models`: This folder contains the model definition for an internal representation of the data and configuration, both models can be customized to fit your needs.
-
-In addition to those folders, other parts of the code might be customized depending on the scenario. You can search the code for comments starting with the `[Customization point]` string, which indicate candidate areas for customization. 
-
 ### Deployment in Azure
 
 To deploy the connector in Azure, you need to follow these steps:
@@ -128,7 +55,7 @@ To deploy the connector in Azure, you need to follow these steps:
 Once the deployment is finished, you can go to the Azure portal and navigate to the Azure Function application. You will see three functions created:
 - `deployConnection`: This function is run once per day and it ensures that the connection is up to date. Run it manually if you want to accelerate crawling since it is needed to run, at least once, for the other functions to work.
 - `fullCrawl`: This function is run once per day and it ensures that all the content is crawled. Run it manually if you want to test in advance.
-- `incrementalCrawl`: This function is run every minute and it ensures that the content is updated. You can run it manually as well.
+- `incrementalCrawl`: This function is run every 15 minutes and it ensures that the content is updated. You can run it manually as well.
 
 ### lastCrawl checkpoint file
 
@@ -151,3 +78,84 @@ rm -f tmp/lastCrawl.json
 When the file is absent the connector will treat the next run as a full crawl and re-ingest all content.
 
 *Note*: For Azure based deployments, it is needed to give admin consent to the permissions of the connector app for this deployment. You can find the Application (Client) ID of this application looking into `AZURE_CLIENT_ID` environment variable defined for the Azure Function application.
+
+### Troubleshooting: Storage account key access (403 KeyBasedAuthenticationNotPermitted)
+
+Cause
+- The Function App fails with: 403 KeyBasedAuthenticationNotPermitted.
+- This happens when the storage account used by Azure Functions has shared-key access disabled, and the Functions runtime is still configured to use key-based authentication (AzureWebJobsStorage).
+
+Compatibility note
+- Ensure that your storage account is compatible with the Shared Key access feature. The account must be a General Purpose v2 (GPv2) or a Block Blob storage account. If your account is a different type (for example, GPv1 or certain premium account types), the "Allow storage account key access" setting may not be applicable.
+
+Quick fix (recommended for immediate recovery)
+1. In the Azure Portal, open the Storage account used by your Function App.
+2. Go to Configuration.
+3. Enable "Allow storage account key access" (setting name: allowSharedKeyAccess) and Save.
+4. Restart the Function App from the Azure Portal.
+5. Verify the Function App logs; the listener for the function (for example `fullCrawl`) should start without the 403 error.
+
+Long-term (recommended): switch AzureWebJobsStorage to identity-based access
+- Rationale: shared keys present a higher risk for long-lived credentials. Use a managed identity for the Function App and grant it access to the Storage account. The managed identity obtains tokens from Azure AD and uses role-based access to Storage.
+
+Steps (examples)
+
+1) Enable a system-assigned managed identity on the Function App
+
+Azure CLI
+```bash
+# replace placeholders: <FUNC_NAME>, <FUNC_RG>
+az functionapp identity assign --name "<FUNC_NAME>" --resource-group "<FUNC_RG>"
+```
+
+PowerShell (run in pwsh; using Azure CLI inside PowerShell)
+```powershell
+# replace placeholders: <FUNC_NAME>, <FUNC_RG>
+az functionapp identity assign --name "<FUNC_NAME>" --resource-group "<FUNC_RG>"
+```
+
+2) Obtain the Function App principalId and the Storage account resource id
+
+Azure CLI
+```bash
+PRINCIPAL_ID=$(az functionapp show -n "<FUNC_NAME>" -g "<FUNC_RG>" --query identity.principalId -o tsv)
+STORAGE_ID=$(az storage account show -n "<STORAGE_ACCOUNT_NAME>" -g "<STORAGE_RG>" --query id -o tsv)
+echo "PrincipalId: $PRINCIPAL_ID"
+echo "StorageId: $STORAGE_ID"
+```
+
+PowerShell
+```powershell
+$principalId = az functionapp show -n "<FUNC_NAME>" -g "<FUNC_RG>" --query identity.principalId -o tsv
+$storageId   = az storage account show -n "<STORAGE_ACCOUNT_NAME>" -g "<STORAGE_RG>" --query id -o tsv
+Write-Host "PrincipalId: $principalId"
+Write-Host "StorageId: $storageId"
+```
+
+3) Grant the managed identity a role on the Storage account (example: Storage Blob Data Contributor)
+
+Azure CLI
+```bash
+az role assignment create --assignee "$PRINCIPAL_ID" --role "Storage Blob Data Contributor" --scope "$STORAGE_ID"
+```
+
+PowerShell
+```powershell
+az role assignment create --assignee $principalId --role "Storage Blob Data Contributor" --scope $storageId
+```
+
+4) Configure the Function App to use identity-based authentication for runtime storage
+- The final step is to update the Function App configuration so the Functions runtime uses your managed identity instead of a storage account key. See the official docs for the authoritative runtime configuration steps; they include guidance for Storage triggers and bindings when using managed identities.
+
+Helpful references (follow these for the precise runtime configuration steps):
+- Azure Functions managed identity overview:
+  https://learn.microsoft.com/azure/azure-functions/functions-managed-identity
+- Authorize access to Azure Storage with Azure AD:
+  https://learn.microsoft.com/azure/storage/blobs/authorize-access-azure-active-directory
+- Functions guidance for identity-based storage / triggers (see the Storage trigger docs for identity-based examples):
+  https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-blob-trigger
+
+Notes
+- The az commands above are safe to run from your local shell (pwsh) after you've authenticated with `az login` and selected the correct subscription via `az account set --subscription <SUB_ID>`.
+- After you configure identity-based access, remove or rotate old storage account keys in app settings (do this carefully — ensure the Functions runtime is fully switched to identity-based auth first).
+- You can also use a user-assigned managed identity instead of a system-assigned one; the commands differ slightly (you must create/assign the user-assigned identity and pass the clientId to the Function App configuration).

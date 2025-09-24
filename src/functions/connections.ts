@@ -198,9 +198,9 @@ app.timer("fullCrawl", {
   handler: fullCrawl,
 });
 
-// Runs every minute
+// Runs every 15 minutes
 app.timer("incrementalCrawl", {
-  schedule: "* */5 * * * *", // (6-field) every 5 minutes
+  schedule: "* */15 * * * *", // (6-field) every 15 minutes
   runOnStartup: false,
   handler: incrementalCrawl,
 });
